@@ -1,0 +1,2 @@
+spring.application.name=sentinel-identity
+spring.profiles.active=dev

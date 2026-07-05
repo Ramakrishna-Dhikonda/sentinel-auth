@@ -1,5 +1,6 @@
 package com.sentinel.identity.user.controller;
 
+import com.sentinel.common.response.ApiResponse;
 import com.sentinel.identity.user.dto.response.UserResponse;
 import com.sentinel.identity.user.entity.User;
 import com.sentinel.identity.user.service.UserService;
@@ -34,8 +35,14 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseEntity<List<UserResponse>> findAll() {
-        return ResponseEntity.ok(userService.listUsers());
+    public ResponseEntity<ApiResponse<List<UserResponse>>> findAll() {
+        return ResponseEntity.ok(
+                ApiResponse.<List<UserResponse>>builder()
+                        .success(true)
+                        .message("User list fetched successfully")
+                        .data(userService.listUsers())
+                        .build()
+        );
     }
 
     @GetMapping("/{id}")

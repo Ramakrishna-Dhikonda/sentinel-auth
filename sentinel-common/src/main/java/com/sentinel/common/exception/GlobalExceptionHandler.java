@@ -35,6 +35,40 @@ public class GlobalExceptionHandler {
         );
     }
 
+    @ExceptionHandler(UserAlreadyDeletedException.class)
+    public ResponseEntity<ApiErrorResponse> handleUserAlreadyDeletedException(UserAlreadyDeletedException e, HttpServletRequest request) {
+        return build(
+                HttpStatus.GONE,  // 410 Gone - resource no longer exists
+                "USER_ALREADY_DELETED",
+                e.getMessage(),
+                request,
+                null
+        );
+    }
+
+    @ExceptionHandler(InvalidOperationException.class)
+    public ResponseEntity<ApiErrorResponse> handleInvalidOperationException(InvalidOperationException e, HttpServletRequest request) {
+        return build(
+                HttpStatus.BAD_REQUEST,
+                "INVALID_OPERATION",
+                e.getMessage(),
+                request,
+                null
+        );
+    }
+
+    // Catch-all for unexpected exceptions
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ApiErrorResponse> handleGenericException(Exception e, HttpServletRequest request) {
+        return build(
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                "INTERNAL_SERVER_ERROR",
+                "An unexpected error occurred",
+                request,
+                null
+        );
+    }
+
     private ResponseEntity<ApiErrorResponse> build(
             HttpStatus status,
             String code,

@@ -18,6 +18,7 @@ public interface UserRepository extends JpaRepository<User, UUID> {
     Optional<User> findByEmail(String email);
 
     @Modifying
+    @Transactional
     @Query("""
         UPDATE User u
             SET u.accountStatus = :status

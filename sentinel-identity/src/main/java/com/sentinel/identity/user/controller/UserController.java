@@ -7,7 +7,9 @@ import com.sentinel.identity.user.dto.request.UpdateUserStatusRequest;
 import com.sentinel.identity.user.dto.response.UserResponse;
 import com.sentinel.identity.user.entity.User;
 import com.sentinel.identity.user.service.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,8 +35,15 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping
-    public ResponseEntity<User> createUser() {
-        return null;
+    public ResponseEntity<ApiResponse<UserResponse>> createUser(@Valid @RequestBody CreateUserRequest userRequest) {
+        UserResponse response = userService.createUser(userRequest);
+        return ResponseEntity.status(HttpStatus.CREATED)  // 201
+                .body(ApiResponse.<UserResponse>builder()
+                        .success(true)
+                        .message("User created successfully")
+                        .data(response)
+                        .build()
+                );
     }
 
     @GetMapping
@@ -60,18 +69,25 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public void updateUser(@RequestParam UUID id, @RequestBody UpdateUserRequest updateUserRequest) {
-
+    public ResponseEntity<ApiResponse<UserResponse>> updateUser(@PathVariable UUID id, @RequestBody UpdateUserRequest updateUserRequest) {
+        UserResponse response = userService.updateUser(id, updateUserRequest);
+        return ResponseEntity.ok(
+                ApiResponse.<UserResponse>builder()
+                        .success(true)
+                        .message("User updated successfully")
+                        .data(response)
+                        .build()
+        );
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<ApiResponse<Void>> deleteUser(@RequestParam UUID id) {
+    public ResponseEntity<ApiResponse<Void>> deleteUser(@PathVariable UUID id) {
         userService.deleteUser(id);
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/username/{username}")
-    public ResponseEntity<ApiResponse<UserResponse>> findByUsername(@RequestParam String username) {
+    public ResponseEntity<ApiResponse<UserResponse>> findByUsername(@PathVariable String username) {
         return ResponseEntity.ok(
                 ApiResponse.<UserResponse>builder()
                         .success(true)
@@ -82,7 +98,7 @@ public class UserController {
     }
 
     @GetMapping("/email/{email}")
-    public ResponseEntity<ApiResponse<UserResponse>> findByEmail(@RequestParam String email) {
+    public ResponseEntity<ApiResponse<UserResponse>> findByEmail(@PathVariable String email) {
         return ResponseEntity.ok(
                 ApiResponse.<UserResponse>builder()
                         .success(true)
@@ -93,7 +109,7 @@ public class UserController {
     }
 
     @PatchMapping("/{id}/status")
-    public ResponseEntity<ApiResponse<Void>> updateStatus(@RequestParam UUID id, @RequestBody UpdateUserStatusRequest statusRequest) {
+    public ResponseEntity<ApiResponse<Void>> updateStatus(@PathVariable UUID id, @RequestBody UpdateUserStatusRequest statusRequest) {
         userService.updateUserStatus(id, statusRequest.getStatus());
         return ResponseEntity.ok(
                 ApiResponse.<Void>builder()

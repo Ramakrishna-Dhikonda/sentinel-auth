@@ -4,6 +4,8 @@ import com.sentinel.common.enums.AccountStatus;
 import com.sentinel.common.exception.InvalidAccountStatusException;
 import com.sentinel.common.exception.InvalidOperationException;
 import com.sentinel.common.exception.UserAlreadyDeletedException;
+import com.sentinel.identity.user.dto.request.CreateUserRequest;
+import com.sentinel.identity.user.dto.request.UpdateUserRequest;
 import com.sentinel.identity.user.dto.response.UserResponse;
 import com.sentinel.identity.user.entity.User;
 import com.sentinel.identity.user.mapper.UserMapper;
@@ -48,12 +50,14 @@ public class UserService {
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with provided email: " + email));
     }
 
+    @Transactional
     public void updateUserStatus(UUID id, AccountStatus status) {
-        UserResponse user = findUserByUserId(id);
-        if (user.getAccountStatus() != AccountStatus.ACTIVE && user.getUsername().equalsIgnoreCase("superadmin")) {
-            throw new InvalidAccountStatusException(
-                    "Super Admin account cannot be deactivated"
-            );
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + id));
+
+        if ("superadmin".equalsIgnoreCase(user.getUsername())
+                && status != AccountStatus.ACTIVE) {
+            throw new InvalidAccountStatusException("Super Admin account cannot be deactivated");
         }
         int updatedRows = userRepository.updateAccountStatus(id, status);
         if (updatedRows == 0) {
@@ -72,5 +76,15 @@ public class UserService {
         if ("superadmin".equalsIgnoreCase(user.getUsername()))
             throw new InvalidOperationException("Super Admin account cannot be deleted.");
         userRepository.softDeleteUser(userId);
+    }
+
+    public UserResponse createUser(CreateUserRequest createUserRequest) {
+        User user = UserMapper.toUserEntity(createUserRequest);
+        User savedUser = userRepository.save(user);
+        return UserMapper.userResponseMapper(savedUser);
+    }
+
+    public UserResponse updateUser(UUID id, UpdateUserRequest updateUserRequest) {
+        return null;
     }
 }

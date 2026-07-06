@@ -12,7 +12,7 @@ import java.util.UUID;
 @Table(name = "users")
 public class User {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
     private String username;
     private String email;
@@ -23,5 +23,7 @@ public class User {
     private Boolean phoneVerified;
     //TODO: create enum
     private AccountStatus accountStatus;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
     private LocalDateTime deletedAt;
 }

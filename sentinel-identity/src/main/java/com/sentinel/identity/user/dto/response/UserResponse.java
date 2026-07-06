@@ -1,5 +1,6 @@
 package com.sentinel.identity.user.dto.response;
 
+import com.sentinel.common.enums.AccountStatus;
 import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
@@ -15,7 +16,7 @@ public class UserResponse {
     private String phoneNumber;
     private String displayName;
     private String avatarUrl;
-    private String accountStatus;
+    private AccountStatus accountStatus;
     private Boolean emailVerified;
     private Boolean phoneVerified;
 }

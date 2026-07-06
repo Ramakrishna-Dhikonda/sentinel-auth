@@ -1,6 +1,9 @@
 package com.sentinel.identity.user.controller;
 
 import com.sentinel.common.response.ApiResponse;
+import com.sentinel.identity.user.dto.request.CreateUserRequest;
+import com.sentinel.identity.user.dto.request.UpdateUserRequest;
+import com.sentinel.identity.user.dto.request.UpdateUserStatusRequest;
 import com.sentinel.identity.user.dto.response.UserResponse;
 import com.sentinel.identity.user.entity.User;
 import com.sentinel.identity.user.service.UserService;
@@ -46,31 +49,57 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<User> getUser(@PathVariable UUID id) {
-        return null;
+    public ResponseEntity<ApiResponse<UserResponse>> getUser(@PathVariable UUID id) {
+        return ResponseEntity.ok(
+                ApiResponse.<UserResponse>builder()
+                        .success(true)
+                        .message("User found with provided ID")
+                        .data(userService.findUserByUserId(id))
+                        .build()
+        );
     }
 
     @PutMapping("/{id}")
-    public void updateUser(@RequestParam UUID id) {
+    public void updateUser(@RequestParam UUID id, @RequestBody UpdateUserRequest updateUserRequest) {
 
     }
-    @DeleteMapping("/{id}")
-    public void deleteUser(@RequestParam UUID id) {
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ApiResponse<Void>> deleteUser(@RequestParam UUID id) {
+        userService.deleteUser(id);
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/username/{username}")
-    public void findByUsername(@RequestParam String username) {
-
+    public ResponseEntity<ApiResponse<UserResponse>> findByUsername(@RequestParam String username) {
+        return ResponseEntity.ok(
+                ApiResponse.<UserResponse>builder()
+                        .success(true)
+                        .message("User found with provided Username")
+                        .data(userService.findUserByUsername(username))
+                        .build()
+        );
     }
 
     @GetMapping("/email/{email}")
-    public void findByEmail(@RequestParam String email) {
-
+    public ResponseEntity<ApiResponse<UserResponse>> findByEmail(@RequestParam String email) {
+        return ResponseEntity.ok(
+                ApiResponse.<UserResponse>builder()
+                        .success(true)
+                        .message("User found with provided Email")
+                        .data(userService.findUserByEmail(email))
+                        .build()
+        );
     }
 
     @PatchMapping("/{id}/status")
-    public void updateStatus(@RequestParam UUID id) {
-
+    public ResponseEntity<ApiResponse<Void>> updateStatus(@RequestParam UUID id, @RequestBody UpdateUserStatusRequest statusRequest) {
+        userService.updateUserStatus(id, statusRequest.getStatus());
+        return ResponseEntity.ok(
+                ApiResponse.<Void>builder()
+                        .success(true)
+                        .message("User status updated successfully")
+                        .build()
+        );
     }
 }

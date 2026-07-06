@@ -1,8 +1,10 @@
 package com.sentinel.identity.user.entity;
 
+import com.sentinel.common.enums.AccountStatus;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Data
@@ -19,7 +21,7 @@ public class User {
     private String avatarUrl;
     private Boolean emailVerified;
     private Boolean phoneVerified;
-    private String accountStatus;
-
     //TODO: create enum
+    private AccountStatus accountStatus;
+    private LocalDateTime deletedAt;
 }

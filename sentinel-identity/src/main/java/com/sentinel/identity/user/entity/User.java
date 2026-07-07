@@ -19,9 +19,8 @@ public class User {
     private String phoneNumber;
     private String displayName;
     private String avatarUrl;
-    private Boolean emailVerified;
-    private Boolean phoneVerified;
-    //TODO: create enum
+    private Boolean emailVerified = false;
+    private Boolean phoneVerified = false;
     private AccountStatus accountStatus;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

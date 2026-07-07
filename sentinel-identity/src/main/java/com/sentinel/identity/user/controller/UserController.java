@@ -32,6 +32,7 @@ PATCH  /api/v1/users/{id}/status
 @RequestMapping("/api/v1/users")
 @RequiredArgsConstructor
 public class UserController {
+    // Instance of userService
     private final UserService userService;
 
     @PostMapping
@@ -109,13 +110,8 @@ public class UserController {
     }
 
     @PatchMapping("/{id}/status")
-    public ResponseEntity<ApiResponse<Void>> updateStatus(@PathVariable UUID id, @RequestBody UpdateUserStatusRequest statusRequest) {
+    public ResponseEntity<Void> updateStatus(@PathVariable UUID id, @RequestBody UpdateUserStatusRequest statusRequest) {
         userService.updateUserStatus(id, statusRequest.getStatus());
-        return ResponseEntity.ok(
-                ApiResponse.<Void>builder()
-                        .success(true)
-                        .message("User status updated successfully")
-                        .build()
-        );
+        return ResponseEntity.noContent().build(); // 204 No Content
     }
 }

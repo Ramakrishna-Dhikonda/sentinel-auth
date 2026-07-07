@@ -7,17 +7,20 @@ import com.sentinel.common.exception.UserAlreadyDeletedException;
 import com.sentinel.identity.user.dto.request.CreateUserRequest;
 import com.sentinel.identity.user.dto.request.UpdateUserRequest;
 import com.sentinel.identity.user.dto.response.UserResponse;
+import com.sentinel.identity.user.entity.PasswordHistory;
 import com.sentinel.identity.user.entity.User;
 import com.sentinel.identity.user.mapper.UserMapper;
+import com.sentinel.identity.user.repository.PasswordHistoryRepository;
 import com.sentinel.identity.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import com.sentinel.common.exception.ResourceNotFoundException;
-//import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -29,8 +32,8 @@ public class UserService {
     private static final Logger log = LoggerFactory.getLogger(UserService.class);
 
     private final UserRepository userRepository;
-    //TODO: update user creation flow to encrypt the password
-    //private final PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
+    private final PasswordHistoryRepository passwordHistoryRepository;
 
     public List<UserResponse> listUsers() {
         log.debug("Fetching all users");
@@ -95,6 +98,7 @@ public class UserService {
         log.info("User with ID {} soft-deleted successfully.", userId);
     }
 
+    @Transactional
     public UserResponse createUser(CreateUserRequest createUserRequest) {
         log.info("Creating new user with username: {}", createUserRequest.getUsername());
         if (userRepository.findByUsername(createUserRequest.getUsername()).isPresent()) {
@@ -106,10 +110,20 @@ public class UserService {
             throw new InvalidOperationException("User with email '" + createUserRequest.getEmail() + "' already exists.");
         }
 
+        // Create and save User entity
         User user = UserMapper.toCreateUserEntity(createUserRequest);
-        //user.setPassword(passwordEncoder.encode(createUserRequest.getPassword()));
         User savedUser = userRepository.save(user);
         log.info("User created successfully with ID: {}", savedUser.getId());
+
+        // Hash password and save to PasswordHistory
+        String hashedPassword = passwordEncoder.encode(createUserRequest.getPassword());
+        PasswordHistory passwordHistory = new PasswordHistory();
+        passwordHistory.setPasswordHash(hashedPassword);
+        passwordHistory.setUser(savedUser);
+        passwordHistory.setCreatedAt(LocalDateTime.now());
+        passwordHistoryRepository.save(passwordHistory);
+        log.info("Password history saved for user ID: {}", savedUser.getId());
+
         return UserMapper.userResponseMapper(savedUser);
     }
 
@@ -123,7 +137,7 @@ public class UserService {
                 (updateUserRequest.getLastName() != null ? updateUserRequest.getLastName() : "");
         existingUser.setDisplayName(displayName.trim());
         existingUser.setPhoneNumber(updateUserRequest.getPhoneNumber());
-
+        //Fixme later -> Add organizationID
         User updatedUser = userRepository.save(existingUser);
         log.info("User with ID {} updated successfully.", updatedUser.getId());
         return UserMapper.userResponseMapper(updatedUser);

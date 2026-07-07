@@ -16,6 +16,7 @@ public class User {
     private UUID id;
     private String username;
     private String email;
+    // Removed password field
     private String phoneNumber;
     private String displayName;
     private String avatarUrl;

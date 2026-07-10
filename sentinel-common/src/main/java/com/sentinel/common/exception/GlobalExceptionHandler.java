@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestControllerAdvice
@@ -41,6 +42,29 @@ public class GlobalExceptionHandler {
                 HttpStatus.GONE,  // 410 Gone - resource no longer exists
                 "USER_ALREADY_DELETED",
                 e.getMessage(),
+                request,
+                null
+        );
+    }
+
+    @ExceptionHandler(UserAlreadyExistsException.class)
+    public ResponseEntity<ApiErrorResponse> handleUserAlreadyExistsException(UserAlreadyExistsException e, HttpServletRequest request) {
+        return build(
+                HttpStatus.IM_USED,  // 410 Gone - resource no longer exists
+                "USER_ALREADY_EXIST",
+                e.getMessage(),
+                request,
+                null
+        );
+    }
+
+    @ExceptionHandler(EmailAlreadyExistsException.class)
+    public ResponseEntity<ApiErrorResponse> handleEmailAlreadyExists(EmailAlreadyExistsException ex, HttpServletRequest request) {
+
+        return build(
+                HttpStatus.CONFLICT,  // 410 Gone - resource no longer exists
+                "EMAIL_ALREADY_REGISTERED",
+                ex.getMessage(),
                 request,
                 null
         );

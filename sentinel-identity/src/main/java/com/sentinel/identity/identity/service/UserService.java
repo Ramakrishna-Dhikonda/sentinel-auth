@@ -1,9 +1,7 @@
 package com.sentinel.identity.identity.service;
 
 import com.sentinel.common.enums.AccountStatus;
-import com.sentinel.common.exception.InvalidAccountStatusException;
-import com.sentinel.common.exception.InvalidOperationException;
-import com.sentinel.common.exception.UserAlreadyDeletedException;
+import com.sentinel.common.exception.*;
 import com.sentinel.identity.identity.dto.request.CreateUserRequest;
 import com.sentinel.identity.identity.dto.request.UpdateUserRequest;
 import com.sentinel.identity.identity.dto.response.UserResponse;
@@ -15,7 +13,6 @@ import com.sentinel.identity.identity.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import com.sentinel.common.exception.ResourceNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -141,5 +138,14 @@ public class UserService {
         User updatedUser = userRepository.save(existingUser);
         log.info("User with ID {} updated successfully.", updatedUser.getId());
         return UserMapper.userResponseMapper(updatedUser);
+    }
+
+    public boolean exists(String userId) {
+        return userRepository.existsById(UUID.fromString(userId));
+    }
+
+    public boolean isEmailAlreadyUsed(String email) {
+        log.debug("Checking if email is already used: {}", email);
+        return userRepository.findByEmail(email).isPresent();
     }
 }

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="SqlDialectMappings">
+    <file url="file://$PROJECT_DIR$/sentinel-identity/src/main/resources/mysql/V1__create_users_table.sql" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/sentinel-identity/src/main/resources/mysql/V2__create_credentials_table.sql" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/sentinel-identity/src/main/resources/mysql/V3__create_refresh_tokens_table.sql" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/sentinel-identity/src/main/resources/mysql/V4__create_roles_table.sql" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/sentinel-identity/src/main/resources/mysql/V5__create_permissions_table.sql" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/sentinel-identity/src/main/resources/mysql/V6__create_role_permissions_table.sql" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/sentinel-identity/src/main/resources/mysql/V7__create_user_roles_table.sql" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/sentinel-identity/src/main/resources/mysql/V8__seed_global.sql" dialect="GenericSQL" />
+  </component>
+</project>
